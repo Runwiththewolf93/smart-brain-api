@@ -1,10 +1,9 @@
-const Clarifai = require('clarifai');
+const Clarifai = require("clarifai");
 
-//You must add your own API key here from Clarifai. 
+//You must add your own API key here from Clarifai.
 const app = new Clarifai.App({
- apiKey: 'YOUR API KEY HERE' 
+  apiKey: "605215a437be492dae1e446d15af83e5",
 });
-
 
 const handleApiCall = (req, res) => {
   app.models
@@ -19,27 +18,29 @@ const handleApiCall = (req, res) => {
     // .predict('53e1df302c079b3db8a0a36033ed2d15', req.body.input)
     .predict(Clarifai.FACE_DETECT_MODEL, req.body.input)
     .then(data => {
+      console.log(data);
       res.json(data);
     })
-    .catch(err => res.status(400).json('unable to work with API'))
-}
+    .catch(err => res.status(400).json("unable to work with API"));
+};
 
 const handleImage = (req, res, db) => {
   const { id } = req.body;
-  db('users').where('id', '=', id)
-  .increment('entries', 1)
-  .returning('entries')
-  .then(entries => {
-    // If you are using knex.js version 1.0.0 or higher this now returns an array of objects. Therefore, the code goes from:
-    // entries[0] --> this used to return the entries
-    // TO
-    // entries[0].entries --> this now returns the entries
-    res.json(entries[0].entries);
-  })
-  .catch(err => res.status(400).json('unable to get entries'))
-}
+  db("users")
+    .where("id", "=", id)
+    .increment("entries", 1)
+    .returning("entries")
+    .then(entries => {
+      // If you are using knex.js version 1.0.0 or higher this now returns an array of objects. Therefore, the code goes from:
+      // entries[0] --> this used to return the entries
+      // TO
+      // entries[0].entries --> this now returns the entries
+      res.json(entries[0].entries);
+    })
+    .catch(err => res.status(400).json("unable to get entries"));
+};
 
 module.exports = {
   handleImage,
-  handleApiCall
-}
+  handleApiCall,
+};

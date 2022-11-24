@@ -11,20 +11,29 @@ const profile = require("./controllers/profile");
 const image = require("./controllers/image");
 const auth = require("./controllers/authorization");
 
+//Database Setup
 const db = knex({
-  // connect to your own database here:
   client: "pg",
   connection: process.env.POSTGRES_URI,
 });
 
 const app = express();
-app.use(cors());
-app.use(express.json()); // latest version of expressJS now comes with Body-Parser!
-app.use(morgan("combined"));
 
-app.get("/", (req, res) => {
-  res.send("ITS WORKING");
-});
+const whitelist = ["http://localhost:3001"];
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+
+app.use(morgan("combined"));
+app.use(cors(corsOptions));
+app.use(express.json()); // latest version of expressJS now comes with Body-Parser!
+
 app.post("/signin", signin.signinAuthentication(db, bcrypt));
 app.post("/register", (req, res) => {
   register.handleRegister(req, res, db, bcrypt);
